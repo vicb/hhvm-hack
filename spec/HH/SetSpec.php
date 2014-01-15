@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 namespace spec\HH;
 
@@ -23,6 +23,14 @@ class SetSpec extends ObjectBehavior
         $this->contains(2)->shouldBe(true);
     }
 
+    function it_should_allow_removing_values() {
+        $this->add('foo');
+        $this->add('bar');
+        $this->remove('foo');
+        $this->shouldHaveCount(1);
+        $this->contains('bar');
+    }
+
     function it_should_not_contain_duplicate_values() {
         $this->add('foo');
         $this->add('foo');
@@ -35,5 +43,21 @@ class SetSpec extends ObjectBehavior
         $this->shouldHaveCount(2);
         $this->contains('foo')->shouldBe(true);
         $this->contains('bar')->shouldBe(true);
+    }
+
+    function it_should_support_map() {
+        $this->addAll(['foo', 'bar']);
+        $this->contains('FOO')->shouldBe(false);
+        $map = $this->map(function($_) { return strtoupper($_); });
+        $map->count()->shouldBe(2);
+        $map->contains('FOO')->shouldBe(true);
+        $map->contains('BAR')->shouldBe(true);
+    }
+
+    function it_should_support_filter() {
+        $this->addAll([1, 2, 3]);
+        $filter = $this->filter(function ($_) { return $_ > 2; });
+        $filter->count()->shouldBe(1);
+        $filter->contains(3)->shouldBe(true);
     }
 }
